@@ -17,6 +17,7 @@ use Catalyst qw/ConfigLoader
                 Session::Store::FastMmap
                 Session::State::Cookie
                 AccessLog
+                SmartURI
                 Captcha/,
                 '-Log=warn,fatal,error';
 use CatalystX::RoleApplicator;
@@ -80,6 +81,9 @@ __PACKAGE__->config(
         create => [ qw/ttf circle/ ],
         particle => [ 3500 ],
         out => { force => 'jpeg' }
+    },
+    'Plugin::SmartURI' => {
+        disposition => 'relative'
     },
 );
 
