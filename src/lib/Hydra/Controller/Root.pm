@@ -69,15 +69,10 @@ sub begin :Private {
     };
     $_->supportedInputTypes($c->stash->{inputTypes}) foreach @{$c->hydra_plugins};
 
-    # XSRF protection: require POST requests to have the same origin.
     if ($c->req->method eq "POST" && $c->req->path ne "api/push-github") {
-        my $referer = $c->req->header('Origin');
-        $referer //= $c->req->header('Referer');
-        my $base = $c->req->base;
-        die unless $base =~ /\/$/;
-        $referer .= "/";
-        error($c, "POST requests should come from ‘$base’.")
-            unless defined $referer && substr($referer, 0, length $base) eq $base;
+        error($c, "For CSRF protection, POST requests must set Content-Type: application/json" .
+              "(you had Content-Type: " . $c->req->content_type . "), or include the X-Requested-With header.")
+            unless $c->req->content_type eq "application/json" or $c->req->header('X-Requested-With')
     }
 
     $c->forward('deserialize');
